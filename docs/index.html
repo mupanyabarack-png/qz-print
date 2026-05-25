@@ -4,37 +4,68 @@ function getParam(name) {
     return url.searchParams.get(name) || "";
 }
 
+window.onload = function () {
+
+try {
+
 /* ENTREPRISE */
-document.getElementById("entreprise").innerText = getParam("entreprise");
-document.getElementById("agence").innerText = getParam("agence");
-document.getElementById("adresse_agence").innerText = getParam("adresse_agence");
-document.getElementById("ville_agence").innerText = getParam("ville_agence");
-document.getElementById("tel_agence").innerText = getParam("tel_agence");
+let entreprise = document.getElementById("entreprise");
+if (entreprise) entreprise.innerText = getParam("entreprise");
+
+let agence = document.getElementById("agence");
+if (agence) agence.innerText = getParam("agence");
+
+let adr = document.getElementById("adresse_agence");
+if (adr) adr.innerText = getParam("adresse_agence");
+
+let ville = document.getElementById("ville_agence");
+if (ville) ville.innerText = getParam("ville_agence");
+
+let tel = document.getElementById("tel_agence");
+if (tel) tel.innerText = getParam("tel_agence");
 
 /* FACTURE */
-document.getElementById("facture_num").innerText = getParam("id");
-document.getElementById("date").innerText = getParam("date");
+let f = document.getElementById("facture_num");
+if (f) f.innerText = getParam("id");
+
+let d = document.getElementById("date");
+if (d) d.innerText = getParam("date");
 
 /* CLIENT */
-document.getElementById("client").innerText = getParam("client");
-document.getElementById("tel_client").innerText = getParam("tel_client");
-document.getElementById("adresse_client").innerText = getParam("adresse_client");
+let c = document.getElementById("client");
+if (c) c.innerText = getParam("client");
+
+let tc = document.getElementById("tel_client");
+if (tc) tc.innerText = getParam("tel_client");
+
+let ac = document.getElementById("adresse_client");
+if (ac) ac.innerText = getParam("adresse_client");
 
 /* RESUME */
-document.getElementById("total").innerText = getParam("total");
-document.getElementById("paye").innerText = getParam("paye");
-document.getElementById("reste").innerText = getParam("reste");
-document.getElementById("statut").innerText = getParam("statut");
+let t = document.getElementById("total");
+if (t) t.innerText = getParam("total");
+
+let p = document.getElementById("paye");
+if (p) p.innerText = getParam("paye");
+
+let r = document.getElementById("reste");
+if (r) r.innerText = getParam("reste");
+
+let s = document.getElementById("statut");
+if (s) s.innerText = getParam("statut");
 
 /* QR */
-document.getElementById("qr").innerText = getParam("qr");
-document.getElementById("entreprise2").innerText = getParam("entreprise");
+let qr = document.getElementById("qr");
+if (qr) qr.innerText = getParam("qr");
+
+let ent2 = document.getElementById("entreprise2");
+if (ent2) ent2.innerText = getParam("entreprise");
 
 /* PRODUITS */
 let produits = getParam("produits") || "";
 let tbody = document.getElementById("produits");
 
-if (produits !== "") {
+if (tbody && produits !== "") {
     let lignes = produits.split(";");
 
     lignes.forEach(l => {
@@ -54,4 +85,10 @@ if (produits !== "") {
         </tr>`;
     });
 }
+
+} catch (e) {
+    console.log("ERREUR JS :", e);
+}
+
+};
 </script>
