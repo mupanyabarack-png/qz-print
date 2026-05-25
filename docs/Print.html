@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Facture</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<pre id="ticket"></pre>
+
+<script>
+function getParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+}
+
+let facture = getParam("id");
+let client = getParam("client");
+let total = getParam("total");
+
+document.getElementById("ticket").innerText =
+"FACTURE : " + facture + "\n" +
+"CLIENT : " + client + "\n" +
+"TOTAL : " + total;
+</script>
+
+</body>
+</html>
