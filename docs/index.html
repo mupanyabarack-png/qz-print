@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Facture</title>
-    <meta charset="UTF-8">
-</head>
-<body>
-
+...
 <pre id="ticket"></pre>
 
 <script>
@@ -22,6 +15,21 @@ document.getElementById("ticket").innerText =
 "FACTURE : " + facture + "\n" +
 "CLIENT : " + client + "\n" +
 "TOTAL : " + total;
+</script>
+
+<!--  ICI TU COLLES TON SCRIPT D’IMPRESSION -->
+<script>
+window.onload = function () {
+    setTimeout(function () {
+        if (window.qz) {
+            qz.websocket.connect().then(function () {
+                return qz.print();
+            });
+        } else {
+            window.print();
+        }
+    }, 1000);
+};
 </script>
 
 </body>
