@@ -1,94 +1,16 @@
+        <!DOCTYPE html>
+<html>
+<body>
+
+<h1>HTML OK</h1>
+
+<div id="entreprise"></div>
+<div id="facture_num"></div>
+
 <script>
-function getParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name) || "";
-}
-
-window.onload = function () {
-
-try {
-
-/* ENTREPRISE */
-let entreprise = document.getElementById("entreprise");
-if (entreprise) entreprise.innerText = getParam("entreprise");
-
-let agence = document.getElementById("agence");
-if (agence) agence.innerText = getParam("agence");
-
-let adr = document.getElementById("adresse_agence");
-if (adr) adr.innerText = getParam("adresse_agence");
-
-let ville = document.getElementById("ville_agence");
-if (ville) ville.innerText = getParam("ville_agence");
-
-let tel = document.getElementById("tel_agence");
-if (tel) tel.innerText = getParam("tel_agence");
-
-/* FACTURE */
-let f = document.getElementById("facture_num");
-if (f) f.innerText = getParam("id");
-
-let d = document.getElementById("date");
-if (d) d.innerText = getParam("date");
-
-/* CLIENT */
-let c = document.getElementById("client");
-if (c) c.innerText = getParam("client");
-
-let tc = document.getElementById("tel_client");
-if (tc) tc.innerText = getParam("tel_client");
-
-let ac = document.getElementById("adresse_client");
-if (ac) ac.innerText = getParam("adresse_client");
-
-/* RESUME */
-let t = document.getElementById("total");
-if (t) t.innerText = getParam("total");
-
-let p = document.getElementById("paye");
-if (p) p.innerText = getParam("paye");
-
-let r = document.getElementById("reste");
-if (r) r.innerText = getParam("reste");
-
-let s = document.getElementById("statut");
-if (s) s.innerText = getParam("statut");
-
-/* QR */
-let qr = document.getElementById("qr");
-if (qr) qr.innerText = getParam("qr");
-
-let ent2 = document.getElementById("entreprise2");
-if (ent2) ent2.innerText = getParam("entreprise");
-
-/* PRODUITS */
-let produits = getParam("produits") || "";
-let tbody = document.getElementById("produits");
-
-if (tbody && produits !== "") {
-    let lignes = produits.split(";");
-
-    lignes.forEach(l => {
-        let p = l.split("|");
-
-        let nom = p[0] || "";
-        let qte = Number(p[1] || 0);
-        let prix = Number(p[2] || 0);
-        let total = qte * prix;
-
-        tbody.innerHTML += `
-        <tr>
-            <td>${nom}</td>
-            <td>${qte}</td>
-            <td>${prix}</td>
-            <td>${total}</td>
-        </tr>`;
-    });
-}
-
-} catch (e) {
-    console.log("ERREUR JS :", e);
-}
-
-};
+document.getElementById("entreprise").innerText = "TEST ENTREPRISE";
+document.getElementById("facture_num").innerText = "001";
 </script>
+
+</body>
+</html>
