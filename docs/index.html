@@ -1,87 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Facture</title>
-
-<style>
-body { font-family: Arial; margin: 20px; }
-h2, h3 { margin: 5px 0; }
-.section { margin-bottom: 15px; }
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-table, th, td { border: 1px solid black; }
-th, td { padding: 8px; }
-.total { text-align: right; font-weight: bold; font-size: 18px; }
-hr { margin: 10px 0; }
-</style>
-</head>
-
-<body>
-
-<!-- ENTREPRISE -->
-<div class="section">
-    <h2 id="entreprise"></h2>
-    <h3 id="agence"></h3>
-
-    <p>Adresse : <span id="adresse_agence"></span></p>
-    <p>Ville : <span id="ville_agence"></span></p>
-    <p>Téléphone : <span id="tel_agence"></span></p>
-</div>
-
-<hr>
-
-<!-- FACTURE -->
-<div class="section">
-    <p><b>FACTURE N° :</b> <span id="facture"></span></p>
-    <p><b>Date :</b> <span id="date"></span></p>
-</div>
-
-<hr>
-
-<!-- CLIENT -->
-<div class="section">
-    <h3>CLIENT</h3>
-    <p>Nom : <span id="client"></span></p>
-    <p>Téléphone : <span id="tel_client"></span></p>
-    <p>Adresse : <span id="adresse_client"></span></p>
-</div>
-
-<hr>
-
-<!-- PRODUITS -->
-<div class="section">
-    <h3>DÉTAILS DES PRODUITS</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Produit</th>
-                <th>Quantité</th>
-                <th>Prix</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody id="produits"></tbody>
-    </table>
-</div>
-
-<hr>
-
-<!-- RÉSUMÉ -->
-<div class="section">
-    <p>Total Facture : <span id="total"></span></p>
-    <p>Montant Payé : <span id="paye"></span></p>
-    <p>Reste à payer : <span id="reste"></span></p>
-    <p>Statut : <span id="statut"></span></p>
-</div>
-
-<hr>
-
-<!-- QR -->
-<div class="section">
-    <p><b>QR :</b> <span id="qr"></span></p>
-</div>
-
 <script>
 function getParam(name) {
     const url = new URL(window.location.href);
@@ -96,7 +12,7 @@ document.getElementById("ville_agence").innerText = getParam("ville_agence");
 document.getElementById("tel_agence").innerText = getParam("tel_agence");
 
 /* FACTURE */
-document.getElementById("facture").innerText = getParam("id");
+document.getElementById("facture_num").innerText = getParam("id");
 document.getElementById("date").innerText = getParam("date");
 
 /* CLIENT */
@@ -104,7 +20,7 @@ document.getElementById("client").innerText = getParam("client");
 document.getElementById("tel_client").innerText = getParam("tel_client");
 document.getElementById("adresse_client").innerText = getParam("adresse_client");
 
-/* TOTAL */
+/* RESUME */
 document.getElementById("total").innerText = getParam("total");
 document.getElementById("paye").innerText = getParam("paye");
 document.getElementById("reste").innerText = getParam("reste");
@@ -112,6 +28,7 @@ document.getElementById("statut").innerText = getParam("statut");
 
 /* QR */
 document.getElementById("qr").innerText = getParam("qr");
+document.getElementById("entreprise2").innerText = getParam("entreprise");
 
 /* PRODUITS */
 let produits = getParam("produits") || "";
@@ -138,6 +55,3 @@ if (produits !== "") {
     });
 }
 </script>
-
-</body>
-</html>
