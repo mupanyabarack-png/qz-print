@@ -2,7 +2,26 @@
 <html>
 <body>
 
-<h1>PAGE OK</h1>
+<h2>FACTURE</h2>
+
+<p>Facture : <span id="facture"></span></p>
+<p>Client : <span id="client"></span></p>
+<p>Total : <span id="total"></span></p>
+
+<script>
+function getParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name) || "";
+}
+
+document.getElementById("facture").innerText = getParam("id");
+document.getElementById("client").innerText = getParam("client");
+document.getElementById("total").innerText = getParam("total");
+
+window.onload = function () {
+    setTimeout(() => window.print(), 1000);
+};
+</script>
 
 </body>
-</html>        ...
+</html>
