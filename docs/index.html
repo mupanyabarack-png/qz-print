@@ -1,104 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Facture</title>
-
-<style>
-body {
-    font-family: Arial;
-    margin: 20px;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.box {
-    margin-bottom: 10px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table, th, td {
-    border: 1px solid black;
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-}
-
-.total {
-    text-align: right;
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-@media print {
-    button { display: none; }
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">
-    <h2 id="entreprise">MON ENTREPRISE</h2>
-    <p id="agence">Agence principale</p>
-</div>
-
-<div class="box">
-    <p><b>Facture :</b> <span id="facture"></span></p>
-    <p><b>Client :</b> <span id="client"></span></p>
-    <p><b>Date :</b> <span id="date"></span></p>
-</div>
-
-<table>
-    <thead>
-        <tr>
-            <th>Produit</th>
-            <th>Quantité</th>
-            <th>Prix</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody id="produits"></tbody>
-</table>
-
-<p class="total">Total Général : <span id="total"></span></p>
-
-<button onclick="window.print()">Imprimer</button>
-
 <script>
 function getParam(name) {
     const url = new URL(window.location.href);
-    return url.searchParams.get(name);
+    return url.searchParams.get(name) || "";
 }
 
-document.getElementById("facture").innerText = getParam("id") || "";
-document.getElementById("client").innerText = getParam("client") || "";
-document.getElementById("total").innerText = getParam("total") || "";
-document.getElementById("date").innerText = new Date().toLocaleDateString();
+// ENTREPRISE
+document.getElementById("entreprise").innerText = getParam("entreprise");
+document.getElementById("agence").innerText = getParam("agence");
 
-// Produits (format simple JSON dans URL plus tard)
-let produits = [
-    {nom:"Produit A", qte:2, prix:10},
-    {nom:"Produit B", qte:1, prix:25}
-];
+// FACTURE
+document.getElementById("facture").innerText = getParam("id");
+document.getElementById("client").innerText = getParam("client");
+document.getElementById("total").innerText = getParam("total");
+
+// PRODUITS
+let produitsRaw = getParam("produits");
 
 let tbody = document.getElementById("produits");
-produits.forEach(p => {
-    let row = "<tr><td>"+p.nom+"</td><td>"+p.qte+"</td><td>"+p.prix+"</td><td>"+(p.qte*p.prix)+"</td></tr>";
-    tbody.innerHTML += row;
-});
-</script>
+tbody.innerHTML = "";
 
-</body>
-</html>
+if (produitsRaw) {
+    let lignes = produitsRaw.split(";");
+
+    lignes.forEach(l => {
+        let p = l.split("|");
+
+        let nom = p[0] || "";
+        let qte = parseFloat(p[1] || 0);
+        let prix = parseFloat(p[2] || 0);
+        let total = qte * prix;
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${nom}</td>
+            <td>${qte}</td>
+            <td>${prix}</td>
+            <td>${total}</td>
+        </tr>`;
+    });
+}
+</script>
