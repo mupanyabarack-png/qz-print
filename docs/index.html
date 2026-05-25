@@ -9,9 +9,26 @@
 
 <p>Facture : <span id="facture"></span></p>
 <p>Date : <span id="date"></span></p>
-
 <p>Client : <span id="client"></span></p>
-<p>Total : <span id="total"></span></p>
+
+<hr>
+
+<h3>Produits</h3>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Produit</th>
+<th>Qté</th>
+<th>Prix</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="produits"></tbody>
+</table>
+
+<hr>
+
+<p><b>Total Général :</b> <span id="total"></span></p>
 
 <script>
 function getParam(name) {
@@ -19,20 +36,40 @@ function getParam(name) {
     return url.searchParams.get(name) || "";
 }
 
-/* ENTREPRISE */
+/* INFOS */
 document.getElementById("entreprise").innerText = getParam("entreprise") || "ENTREPRISE";
 document.getElementById("agence").innerText = getParam("agence") || "AGENCE";
-
-/* FACTURE */
 document.getElementById("facture").innerText = getParam("id");
 document.getElementById("date").innerText = getParam("date");
-
-/* CLIENT */
 document.getElementById("client").innerText = getParam("client");
-
-/* TOTAL */
 document.getElementById("total").innerText = getParam("total");
 
+/* PRODUITS */
+let produits = getParam("produits");
+let tbody = document.getElementById("produits");
+
+if (produits) {
+    let lignes = produits.split(";");
+
+    lignes.forEach(l => {
+        let p = l.split("|");
+
+        let nom = p[0] || "";
+        let qte = Number(p[1] || 0);
+        let prix = Number(p[2] || 0);
+        let total = qte * prix;
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${nom}</td>
+            <td>${qte}</td>
+            <td>${prix}</td>
+            <td>${total}</td>
+        </tr>`;
+    });
+}
+
+/* PRINT AUTO */
 window.onload = function () {
     setTimeout(() => window.print(), 1000);
 };
