@@ -1,15 +1,35 @@
-        <!DOCTYPE html>
-<html>
-<body>
-
-<h1>HTML OK</h1>
-
-<div id="entreprise"></div>
-<div id="facture_num"></div>
+        ...
+<pre id="ticket"></pre>
 
 <script>
-document.getElementById("entreprise").innerText = "TEST ENTREPRISE";
-document.getElementById("facture_num").innerText = "001";
+function getParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+}
+
+let facture = getParam("id");
+let client = getParam("client");
+let total = getParam("total");
+
+document.getElementById("ticket").innerText =
+"FACTURE : " + facture + "\n" +
+"CLIENT : " + client + "\n" +
+"TOTAL : " + total;
+</script>
+
+<!--  ICI TU COLLES TON SCRIPT D’IMPRESSION -->
+<script>
+window.onload = function () {
+    setTimeout(function () {
+        if (window.qz) {
+            qz.websocket.connect().then(function () {
+                return qz.print();
+            });
+        } else {
+            window.print();
+        }
+    }, 1000);
+};
 </script>
 
 </body>
