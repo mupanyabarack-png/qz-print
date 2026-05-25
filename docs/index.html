@@ -6,36 +6,81 @@
 
 <style>
 body { font-family: Arial; margin: 20px; }
-.header { text-align: center; margin-bottom: 20px; }
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+h2, h3 { margin: 5px 0; }
+.section { margin-bottom: 15px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 table, th, td { border: 1px solid black; }
 th, td { padding: 8px; }
-.total { text-align: right; font-size: 18px; font-weight: bold; }
+.total { text-align: right; font-weight: bold; font-size: 18px; }
+hr { margin: 10px 0; }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-    <h2 id="entreprise">ENTREPRISE</h2>
-    <p id="agence">Agence</p>
+<!-- ENTREPRISE -->
+<div class="section">
+    <h2 id="entreprise"></h2>
+    <h3 id="agence"></h3>
+
+    <p>Adresse : <span id="adresse_agence"></span></p>
+    <p>Ville : <span id="ville_agence"></span></p>
+    <p>Téléphone : <span id="tel_agence"></span></p>
 </div>
 
-<p><b>Facture :</b> <span id="facture"></span></p>
-<p><b>Client :</b> <span id="client"></span></p>
-<p><b>Total :</b> <span id="total"></span></p>
+<hr>
 
-<table>
-<thead>
-<tr>
-<th>Produit</th>
-<th>Qté</th>
-<th>Prix</th>
-<th>Total</th>
-</tr>
-</thead>
-<tbody id="produits"></tbody>
-</table>
+<!-- FACTURE -->
+<div class="section">
+    <p><b>FACTURE N° :</b> <span id="facture"></span></p>
+    <p><b>Date :</b> <span id="date"></span></p>
+</div>
+
+<hr>
+
+<!-- CLIENT -->
+<div class="section">
+    <h3>CLIENT</h3>
+    <p>Nom : <span id="client"></span></p>
+    <p>Téléphone : <span id="tel_client"></span></p>
+    <p>Adresse : <span id="adresse_client"></span></p>
+</div>
+
+<hr>
+
+<!-- PRODUITS -->
+<div class="section">
+    <h3>DÉTAILS DES PRODUITS</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="produits"></tbody>
+    </table>
+</div>
+
+<hr>
+
+<!-- RÉSUMÉ -->
+<div class="section">
+    <p>Total Facture : <span id="total"></span></p>
+    <p>Montant Payé : <span id="paye"></span></p>
+    <p>Reste à payer : <span id="reste"></span></p>
+    <p>Statut : <span id="statut"></span></p>
+</div>
+
+<hr>
+
+<!-- QR -->
+<div class="section">
+    <p><b>QR :</b> <span id="qr"></span></p>
+</div>
 
 <script>
 function getParam(name) {
@@ -43,19 +88,37 @@ function getParam(name) {
     return url.searchParams.get(name) || "";
 }
 
-// SAFE VALUES
-document.getElementById("entreprise").innerText = getParam("entreprise") || "Entreprise";
-document.getElementById("agence").innerText = getParam("agence") || "Agence";
-document.getElementById("facture").innerText = getParam("id") || "";
-document.getElementById("client").innerText = getParam("client") || "";
-document.getElementById("total").innerText = getParam("total") || "";
+/* ENTREPRISE */
+document.getElementById("entreprise").innerText = getParam("entreprise");
+document.getElementById("agence").innerText = getParam("agence");
+document.getElementById("adresse_agence").innerText = getParam("adresse_agence");
+document.getElementById("ville_agence").innerText = getParam("ville_agence");
+document.getElementById("tel_agence").innerText = getParam("tel_agence");
 
-// PRODUITS SAFE
-let produitsRaw = getParam("produits") || "";
+/* FACTURE */
+document.getElementById("facture").innerText = getParam("id");
+document.getElementById("date").innerText = getParam("date");
+
+/* CLIENT */
+document.getElementById("client").innerText = getParam("client");
+document.getElementById("tel_client").innerText = getParam("tel_client");
+document.getElementById("adresse_client").innerText = getParam("adresse_client");
+
+/* TOTAL */
+document.getElementById("total").innerText = getParam("total");
+document.getElementById("paye").innerText = getParam("paye");
+document.getElementById("reste").innerText = getParam("reste");
+document.getElementById("statut").innerText = getParam("statut");
+
+/* QR */
+document.getElementById("qr").innerText = getParam("qr");
+
+/* PRODUITS */
+let produits = getParam("produits") || "";
 let tbody = document.getElementById("produits");
 
-if (produitsRaw !== "") {
-    let lignes = produitsRaw.split(";");
+if (produits !== "") {
+    let lignes = produits.split(";");
 
     lignes.forEach(l => {
         let p = l.split("|");
