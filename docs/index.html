@@ -1,33 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Facture</title>
+
+<style>
+body { font-family: Arial; margin: 20px; }
+.header { text-align: center; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+table, th, td { border: 1px solid black; }
+th, td { padding: 8px; }
+.total { text-align: right; font-size: 18px; font-weight: bold; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2 id="entreprise">ENTREPRISE</h2>
+    <p id="agence">Agence</p>
+</div>
+
+<p><b>Facture :</b> <span id="facture"></span></p>
+<p><b>Client :</b> <span id="client"></span></p>
+<p><b>Total :</b> <span id="total"></span></p>
+
+<table>
+<thead>
+<tr>
+<th>Produit</th>
+<th>Qté</th>
+<th>Prix</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="produits"></tbody>
+</table>
+
 <script>
 function getParam(name) {
     const url = new URL(window.location.href);
     return url.searchParams.get(name) || "";
 }
 
-// ENTREPRISE
-document.getElementById("entreprise").innerText = getParam("entreprise");
-document.getElementById("agence").innerText = getParam("agence");
+// SAFE VALUES
+document.getElementById("entreprise").innerText = getParam("entreprise") || "Entreprise";
+document.getElementById("agence").innerText = getParam("agence") || "Agence";
+document.getElementById("facture").innerText = getParam("id") || "";
+document.getElementById("client").innerText = getParam("client") || "";
+document.getElementById("total").innerText = getParam("total") || "";
 
-// FACTURE
-document.getElementById("facture").innerText = getParam("id");
-document.getElementById("client").innerText = getParam("client");
-document.getElementById("total").innerText = getParam("total");
-
-// PRODUITS
-let produitsRaw = getParam("produits");
-
+// PRODUITS SAFE
+let produitsRaw = getParam("produits") || "";
 let tbody = document.getElementById("produits");
-tbody.innerHTML = "";
 
-if (produitsRaw) {
+if (produitsRaw !== "") {
     let lignes = produitsRaw.split(";");
 
     lignes.forEach(l => {
         let p = l.split("|");
 
         let nom = p[0] || "";
-        let qte = parseFloat(p[1] || 0);
-        let prix = parseFloat(p[2] || 0);
+        let qte = Number(p[1] || 0);
+        let prix = Number(p[2] || 0);
         let total = qte * prix;
 
         tbody.innerHTML += `
@@ -40,3 +75,6 @@ if (produitsRaw) {
     });
 }
 </script>
+
+</body>
+</html>
