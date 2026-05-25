@@ -2,9 +2,14 @@
 <html>
 <body>
 
-<h2>FACTURE</h2>
+<h2 id="entreprise">ENTREPRISE</h2>
+<p id="agence">AGENCE</p>
+
+<hr>
 
 <p>Facture : <span id="facture"></span></p>
+<p>Date : <span id="date"></span></p>
+
 <p>Client : <span id="client"></span></p>
 <p>Total : <span id="total"></span></p>
 
@@ -14,8 +19,18 @@ function getParam(name) {
     return url.searchParams.get(name) || "";
 }
 
+/* ENTREPRISE */
+document.getElementById("entreprise").innerText = getParam("entreprise") || "ENTREPRISE";
+document.getElementById("agence").innerText = getParam("agence") || "AGENCE";
+
+/* FACTURE */
 document.getElementById("facture").innerText = getParam("id");
+document.getElementById("date").innerText = getParam("date");
+
+/* CLIENT */
 document.getElementById("client").innerText = getParam("client");
+
+/* TOTAL */
 document.getElementById("total").innerText = getParam("total");
 
 window.onload = function () {
