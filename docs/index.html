@@ -1,36 +1,8 @@
-        ...
-<pre id="ticket"></pre>
+<!DOCTYPE html>
+<html>
+<body>
 
-<script>
-function getParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name);
-}
-
-let facture = getParam("id");
-let client = getParam("client");
-let total = getParam("total");
-
-document.getElementById("ticket").innerText =
-"FACTURE : " + facture + "\n" +
-"CLIENT : " + client + "\n" +
-"TOTAL : " + total;
-</script>
-
-<!--  ICI TU COLLES TON SCRIPT D’IMPRESSION -->
-<script>
-window.onload = function () {
-    setTimeout(function () {
-        if (window.qz) {
-            qz.websocket.connect().then(function () {
-                return qz.print();
-            });
-        } else {
-            window.print();
-        }
-    }, 1000);
-};
-</script>
+<h1>PAGE OK</h1>
 
 </body>
-</html>
+</html>        ...
