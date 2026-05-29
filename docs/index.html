@@ -5,6 +5,7 @@
 <title>Facture</title>
 
 <style>
+
 body{
   font-family:Arial;
   width:320px;
@@ -33,6 +34,14 @@ button{
   padding:10px;
   margin-top:10px;
 }
+
+/* Cache le bouton pendant impression */
+@media print {
+  button{
+    display:none;
+  }
+}
+
 </style>
 </head>
 
@@ -79,7 +88,7 @@ document.getElementById("footerEntreprise").innerText =
 "Merci pour votre confiance - " + entreprise;
 
 // =======================
-// PRODUITS VERSION STABLE
+// PRODUITS
 // =======================
 
 let produits = params.get("produits") || "";
