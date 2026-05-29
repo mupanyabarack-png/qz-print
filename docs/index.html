@@ -38,6 +38,12 @@ th,td{
   font-weight:bold;
 }
 
+.footer{
+  margin-top:15px;
+  text-align:center;
+  font-weight:bold;
+}
+
 button{
   width:100%;
   padding:10px;
@@ -78,7 +84,9 @@ button{
 <p>STATUT : <span id="statut"></span></p>
 </div>
 
-<p style="text-align:center;">Merci pour votre confiance</p>
+<div class="footer">
+<p id="footerEntreprise"></p>
+</div>
 
 <button onclick="window.print()">Imprimer</button>
 
@@ -89,7 +97,9 @@ button{
 // ======================
 const params = new URLSearchParams(window.location.search);
 
-document.getElementById("entreprise").innerText = params.get("entreprise") || "";
+const entreprise = params.get("entreprise") || "";
+
+document.getElementById("entreprise").innerText = entreprise;
 document.getElementById("agence").innerText = params.get("agence") || "";
 document.getElementById("facture").innerText = params.get("facture") || "";
 document.getElementById("date").innerText = params.get("date") || "";
@@ -101,43 +111,47 @@ document.getElementById("reste").innerText = params.get("reste") || "0";
 document.getElementById("statut").innerText = params.get("statut") || "";
 
 // ======================
-// PRODUITS (FIX FINAL STABLE)
+// PRODUITS (ROBUSTE)
 // ======================
-
 let produits = params.get("produits");
 
 const tbody = document.getElementById("produits");
 tbody.innerHTML = "";
 
-if (produits && produits.length > 0) {
+if (produits) {
 
-  // IMPORTANT : décodage URL
   produits = decodeURIComponent(produits);
 
-  const lignes = produits.split(";").filter(l => l.trim() !== "");
+  const lignes = produits.split(";");
 
   lignes.forEach(ligne => {
 
+    if (!ligne || ligne.trim() === "") return;
+
     const data = ligne.trim().split(",");
 
-    if (data.length === 4) {
+    if (data.length < 4) return;
 
-      const tr = document.createElement("tr");
+    const tr = document.createElement("tr");
 
-      tr.innerHTML = `
-        <td>${data[0].trim()}</td>
-        <td>${data[1].trim()}</td>
-        <td>${data[2].trim()}</td>
-        <td>${data[3].trim()}</td>
-      `;
+    tr.innerHTML = `
+      <td>${data[0]?.trim() || ""}</td>
+      <td>${data[1]?.trim() || ""}</td>
+      <td>${data[2]?.trim() || ""}</td>
+      <td>${data[3]?.trim() || ""}</td>
+    `;
 
-      tbody.appendChild(tr);
-
-    }
+    tbody.appendChild(tr);
 
   });
 
 }
+
+// ======================
+// FOOTER ENTREPRISE
+// ======================
+document.getElementById("footerEntreprise").innerText =
+  "Merci pour votre confiance - " + entreprise;
 
 </script>
 
