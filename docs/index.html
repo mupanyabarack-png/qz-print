@@ -1,79 +1,228 @@
-<!DOCTYPE html>
-<html>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Impression Facture QZ</title>
+
+  <!-- QZ Tray -->
+  <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.js"></script>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      width: 300px;
+      margin: auto;
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .center{
+      text-align:center;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+
+    th, td{
+      border-bottom:1px dashed #000;
+      padding:4px;
+      font-size:11px;
+    }
+
+    .total{
+      margin-top:10px;
+      font-weight:bold;
+    }
+
+    button{
+      margin-top:15px;
+      width:100%;
+      padding:10px;
+      font-size:14px;
+    }
+  </style>
+</head>
+
 <body>
 
-<h2 id="entreprise">ENTREPRISE</h2>
-<p id="agence">AGENCE</p>
+  <!-- FACTURE -->
+  <div id="ticket">
 
-<hr>
+    <div class="center">
+      <h3 id="entreprise"></h3>
+      <div id="agence"></div>
+      <div id="telephone"></div>
+    </div>
 
-<p>Facture : <span id="facture"></span></p>
-<p>Date : <span id="date"></span></p>
-<p>Client : <span id="client"></span></p>
+    <hr>
 
-<hr>
+    <div>
+      <strong>FACTURE :</strong>
+      <span id="facture"></span>
+    </div>
 
-<h3>Produits</h3>
-<table border="1" width="100%">
-<thead>
-<tr>
-<th>Produit</th>
-<th>Qté</th>
-<th>Prix</th>
-<th>Total</th>
-</tr>
-</thead>
-<tbody id="produits"></tbody>
-</table>
+    <div>
+      <strong>DATE :</strong>
+      <span id="date"></span>
+    </div>
 
-<hr>
+    <div>
+      <strong>CLIENT :</strong>
+      <span id="client"></span>
+    </div>
 
-<p><b>Total Général :</b> <span id="total"></span></p>
+    <hr>
 
-<script>
-function getParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name) || "";
-}
-
-/* INFOS */
-document.getElementById("entreprise").innerText = getParam("entreprise") || "ENTREPRISE";
-document.getElementById("agence").innerText = getParam("agence") || "AGENCE";
-document.getElementById("facture").innerText = getParam("id");
-document.getElementById("date").innerText = getParam("date");
-document.getElementById("client").innerText = getParam("client");
-document.getElementById("total").innerText = getParam("total");
-
-/* PRODUITS */
-let produits = getParam("produits");
-let tbody = document.getElementById("produits");
-
-if (produits) {
-    let lignes = produits.split(";");
-
-    lignes.forEach(l => {
-        let p = l.split("|");
-
-        let nom = p[0] || "";
-        let qte = Number(p[1] || 0);
-        let prix = Number(p[2] || 0);
-        let total = qte * prix;
-
-        tbody.innerHTML += `
+    <table>
+      <thead>
         <tr>
-            <td>${nom}</td>
-            <td>${qte}</td>
-            <td>${prix}</td>
-            <td>${total}</td>
-        </tr>`;
-    });
-}
+          <th>Produit</th>
+          <th>Qté</th>
+          <th>PU</th>
+          <th>Total</th>
+        </tr>
+      </thead>
 
-/* PRINT AUTO */
-window.onload = function () {
-    setTimeout(() => window.print(), 1000);
-};
-</script>
+      <tbody id="produits"></tbody>
+    </table>
+
+    <div class="total">
+      TOTAL : <span id="montant_total"></span>
+    </div>
+
+    <div>
+      PAYÉ : <span id="montant_paye"></span>
+    </div>
+
+    <div>
+      RESTE : <span id="reste"></span>
+    </div>
+
+    <div>
+      STATUT : <span id="statut"></span>
+    </div>
+
+    <hr>
+
+    <div class="center">
+      Merci pour votre confiance
+      <br><br>
+      <strong id="entreprise_footer"></strong>
+    </div>
+
+  </div>
+
+  <button onclick="printTicket()">
+    Imprimer
+  </button>
+
+  <script>
+
+    // =========================
+    // RECUPERATION PARAMETRES
+    // =========================
+
+    const params = new URLSearchParams(window.location.search);
+
+    const entreprise     = params.get("entreprise") || "";
+    const agence         = params.get("agence") || "";
+    const telephone      = params.get("telephone") || "";
+    const facture        = params.get("facture") || "";
+    const date           = params.get("date") || "";
+    const client         = params.get("client") || "";
+    const montant_total  = params.get("montant_total") || "";
+    const montant_paye   = params.get("montant_paye") || "";
+    const reste          = params.get("reste") || "";
+    const statut         = params.get("statut") || "";
+
+    // produits format :
+    // Riz,2,1000,2000;Sucre,1,3000,3000
+
+    const produits = params.get("produits") || "";
+
+    // =========================
+    // INJECTION HTML
+    // =========================
+
+    document.getElementById("entreprise").innerText = entreprise;
+    document.getElementById("agence").innerText = agence;
+    document.getElementById("telephone").innerText = telephone;
+    document.getElementById("facture").innerText = facture;
+    document.getElementById("date").innerText = date;
+    document.getElementById("client").innerText = client;
+    document.getElementById("montant_total").innerText = montant_total;
+    document.getElementById("montant_paye").innerText = montant_paye;
+    document.getElementById("reste").innerText = reste;
+    document.getElementById("statut").innerText = statut;
+    document.getElementById("entreprise_footer").innerText = entreprise;
+
+    // =========================
+    // PRODUITS
+    // =========================
+
+    const tbody = document.getElementById("produits");
+
+    if(produits !== ""){
+
+      const lignes = produits.split(";");
+
+      lignes.forEach(ligne => {
+
+        const data = ligne.split(",");
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${data[0] || ""}</td>
+          <td>${data[1] || ""}</td>
+          <td>${data[2] || ""}</td>
+          <td>${data[3] || ""}</td>
+        `;
+
+        tbody.appendChild(tr);
+
+      });
+
+    }
+
+    // =========================
+    // IMPRESSION QZ
+    // =========================
+
+    async function printTicket(){
+
+      try{
+
+        await qz.websocket.connect();
+
+        const printer = await qz.printers.getDefault();
+
+        const config = qz.configs.create(printer);
+
+        const ticket = document.getElementById("ticket").innerText;
+
+        await qz.print(config, [{
+          type: 'raw',
+          format: 'plain',
+          data: ticket
+        }]);
+
+        alert("Impression réussie");
+
+      }catch(error){
+
+        console.error(error);
+
+        alert("Erreur impression : " + error);
+
+      }
+
+    }
+
+  </script>
 
 </body>
 </html>
