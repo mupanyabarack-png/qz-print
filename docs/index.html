@@ -101,24 +101,24 @@ document.getElementById("reste").innerText = params.get("reste") || "0";
 document.getElementById("statut").innerText = params.get("statut") || "";
 
 // ======================
-// PRODUITS (FIX FINAL)
+// PRODUITS (FIX FINAL STABLE)
 // ======================
-const produits = (params.get("produits") || "").trim();
+
+let produits = params.get("produits");
 
 const tbody = document.getElementById("produits");
-
-// IMPORTANT : vider tableau
 tbody.innerHTML = "";
 
-if (produits.length > 0) {
+if (produits && produits.length > 0) {
+
+  // IMPORTANT : décodage URL
+  produits = decodeURIComponent(produits);
 
   const lignes = produits.split(";").filter(l => l.trim() !== "");
 
   lignes.forEach(ligne => {
 
-    const clean = ligne.trim().replace(/\s+/g, " ");
-
-    const data = clean.split(",");
+    const data = ligne.trim().split(",");
 
     if (data.length === 4) {
 
