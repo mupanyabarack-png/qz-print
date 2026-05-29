@@ -114,41 +114,44 @@ document.getElementById("reste").innerText = params.get("reste") || "0";
 document.getElementById("statut").innerText = params.get("statut") || "";
 
 // ======================
-// PRODUITS (VERSION 100% ROBUSTE)
+// PRODUITS (ULTRA ROBUSTE FINAL)
 // ======================
 let produits = params.get("produits") || "";
 
 const tbody = document.getElementById("produits");
 tbody.innerHTML = "";
 
-if (produits.length > 0) {
+if (produits.trim() !== "") {
 
-  // décodage URL
+  // décodage complet URL
   produits = decodeURIComponent(produits);
 
-  // nettoyage global (retours ligne)
+  // suppression retours ligne invisibles
   produits = produits.replace(/\r?\n|\r/g, "");
 
-  // séparation lignes
-  const lignes = produits.split(";");
+  // séparation lignes produits
+  const lignes = produits.split(";").filter(l => l.trim() !== "");
 
   for (let i = 0; i < lignes.length; i++) {
 
-    let ligne = lignes[i];
+    let ligne = lignes[i].trim();
 
-    if (!ligne || ligne.trim() === "") continue;
+    if (!ligne) continue;
+
+    // nettoyage espaces multiples
+    ligne = ligne.replace(/\s+/g, " ");
 
     const data = ligne.split(",");
 
-    if (data.length !== 4) continue;
+    if (data.length < 4) continue;
 
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${data[0].trim()}</td>
-      <td>${data[1].trim()}</td>
-      <td>${data[2].trim()}</td>
-      <td>${data[3].trim()}</td>
+      <td>${data[0]?.trim() || ""}</td>
+      <td>${data[1]?.trim() || ""}</td>
+      <td>${data[2]?.trim() || ""}</td>
+      <td>${data[3]?.trim() || ""}</td>
     `;
 
     tbody.appendChild(tr);
