@@ -4,38 +4,62 @@
 <meta charset="UTF-8">
 <title>Facture</title>
 
+<!-- QR CODE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
+
+/* =======================
+FORMAT TICKET
+======================= */
 
 body{
   font-family: Arial;
-  width: 320px;
+  width: 58mm;
   margin: auto;
-  font-size: 14px;
+  font-size: 12px;
 }
 
+/*
+Pour 80mm remplace simplement :
+width:58mm;
+par
+width:80mm;
+*/
+
 h2,h3{
-  text-align: center;
-  margin: 5px;
+  text-align:center;
+  margin:3px;
+}
+
+.info{
+  margin-bottom:5px;
 }
 
 .produit{
-  border-bottom: 1px dashed black;
-  padding: 5px 0;
+  border-bottom:1px dashed black;
+  padding:5px 0;
 }
 
 .footer{
-  text-align: center;
-  margin-top: 15px;
-  font-weight: bold;
+  text-align:center;
+  margin-top:10px;
+  font-weight:bold;
+}
+
+#qrcode{
+  display:flex;
+  justify-content:center;
+  margin-top:10px;
 }
 
 button{
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  width:100%;
+  padding:10px;
+  margin-top:10px;
 }
 
-/* Cache le bouton à l'impression */
+/* Cache bouton impression */
 @media print {
 
   #printBtn{
@@ -52,28 +76,29 @@ button{
 <h2 id="entreprise"></h2>
 <h3 id="agence"></h3>
 
+<div class="info">
 <p><b>FACTURE :</b> <span id="facture"></span></p>
-
 <p><b>DATE :</b> <span id="date"></span></p>
-
 <p><b>CLIENT :</b> <span id="client"></span></p>
+</div>
 
 <!-- PRODUITS -->
 <div id="produits"></div>
 
+<br>
+
 <p><b>TOTAL :</b> <span id="total"></span></p>
-
 <p><b>PAYÉ :</b> <span id="paye"></span></p>
-
 <p><b>RESTE :</b> <span id="reste"></span></p>
-
 <p><b>STATUT :</b> <span id="statut"></span></p>
 
+<!-- QR CODE -->
+<div id="qrcode"></div>
+
 <div class="footer">
-  <p id="footerEntreprise"></p>
+<p id="footerEntreprise"></p>
 </div>
 
-<!-- BOUTON IMPRIMER -->
 <button id="printBtn" onclick="window.print()">
 Imprimer
 </button>
@@ -91,33 +116,29 @@ const params = new URLSearchParams(window.location.search);
 // =======================
 
 const entreprise = params.get("entreprise") || "";
+const agence = params.get("agence") || "";
+const facture = params.get("facture") || "";
+const date = params.get("date") || "";
+const client = params.get("client") || "";
+const montant_total = params.get("montant_total") || "0";
+const montant_paye = params.get("montant_paye") || "0";
+const reste = params.get("reste") || "0";
+const statut = params.get("statut") || "";
 
-document.getElementById("entreprise").innerText =
-entreprise;
+// =======================
+// AFFICHAGE
+// =======================
 
-document.getElementById("agence").innerText =
-params.get("agence") || "";
+document.getElementById("entreprise").innerText = entreprise;
+document.getElementById("agence").innerText = agence;
+document.getElementById("facture").innerText = facture;
+document.getElementById("date").innerText = date;
+document.getElementById("client").innerText = client;
 
-document.getElementById("facture").innerText =
-params.get("facture") || "";
-
-document.getElementById("date").innerText =
-params.get("date") || "";
-
-document.getElementById("client").innerText =
-params.get("client") || "";
-
-document.getElementById("total").innerText =
-params.get("montant_total") || "0";
-
-document.getElementById("paye").innerText =
-params.get("montant_paye") || "0";
-
-document.getElementById("reste").innerText =
-params.get("reste") || "0";
-
-document.getElementById("statut").innerText =
-params.get("statut") || "";
+document.getElementById("total").innerText = montant_total;
+document.getElementById("paye").innerText = montant_paye;
+document.getElementById("reste").innerText = reste;
+document.getElementById("statut").innerText = statut;
 
 // =======================
 // FOOTER
@@ -132,44 +153,72 @@ document.getElementById("footerEntreprise").innerText =
 
 let produits = params.get("produits") || "";
 
-// décodage URL
 produits = decodeURIComponent(produits);
 
-// conteneur
-const container =
-document.getElementById("produits");
+const container = document.getElementById("produits");
 
-// si vide → rien
+let produitsQR = "";
+
 if(produits.trim() !== ""){
 
-  // séparation lignes
   const lignes = produits.split("###");
 
   lignes.forEach(ligne => {
 
-    // séparation colonnes
     const data = ligne.split("|||");
 
-    // sécurité
     if(data.length >= 4){
+
+      const nomProduit = data[0];
+      const quantite = data[1];
+      const prix = data[2];
+      const totalProduit = data[3];
 
       const div = document.createElement("div");
 
       div.className = "produit";
 
       div.innerHTML = `
-        <b>${data[0]}</b><br>
-        Qté: ${data[1]}<br>
-        PU: ${data[2]}<br>
-        Total: ${data[3]}
+        <b>${nomProduit}</b><br>
+        Qté: ${quantite}<br>
+        PU: ${prix}<br>
+        Total: ${totalProduit}
       `;
 
       container.appendChild(div);
+
+      // texte QR
+      produitsQR +=
+      "Produit: " + nomProduit +
+      " | Qté: " + quantite +
+      " | PU: " + prix +
+      " | Total: " + totalProduit + "\n";
+
     }
 
   });
 
 }
+
+// =======================
+// TEXTE QR CODE
+// =======================
+
+const qrText =
+"Client: " + client + "\n" +
+produitsQR +
+"Montant Total: " + montant_total + "\n" +
+"Statut: " + statut;
+
+// =======================
+// GÉNÉRATION QR CODE
+// =======================
+
+new QRCode(document.getElementById("qrcode"), {
+    text: qrText,
+    width: 120,
+    height: 120
+});
 
 </script>
 
