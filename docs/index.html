@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -7,39 +7,41 @@
 <style>
 
 body{
-  font-family:Arial;
-  width:320px;
-  margin:auto;
-  font-size:14px;
+  font-family: Arial;
+  width: 320px;
+  margin: auto;
+  font-size: 14px;
 }
 
 h2,h3{
-  text-align:center;
-  margin:5px;
+  text-align: center;
+  margin: 5px;
 }
 
 .produit{
-  border-bottom:1px dashed black;
-  padding:5px 0;
+  border-bottom: 1px dashed black;
+  padding: 5px 0;
 }
 
 .footer{
-  text-align:center;
-  margin-top:15px;
-  font-weight:bold;
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
 }
 
 button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
 }
 
-/* Cache le bouton pendant impression */
+/* Cache le bouton à l'impression */
 @media print {
-  button{
-    display:none;
+
+  #printBtn{
+    display:none !important;
   }
+
 }
 
 </style>
@@ -51,38 +53,75 @@ button{
 <h3 id="agence"></h3>
 
 <p><b>FACTURE :</b> <span id="facture"></span></p>
+
 <p><b>DATE :</b> <span id="date"></span></p>
+
 <p><b>CLIENT :</b> <span id="client"></span></p>
 
+<!-- PRODUITS -->
 <div id="produits"></div>
 
 <p><b>TOTAL :</b> <span id="total"></span></p>
+
 <p><b>PAYÉ :</b> <span id="paye"></span></p>
+
 <p><b>RESTE :</b> <span id="reste"></span></p>
+
 <p><b>STATUT :</b> <span id="statut"></span></p>
 
 <div class="footer">
-<p id="footerEntreprise"></p>
+  <p id="footerEntreprise"></p>
 </div>
 
-<button onclick="window.print()">Imprimer</button>
+<!-- BOUTON IMPRIMER -->
+<button id="printBtn" onclick="window.print()">
+Imprimer
+</button>
 
 <script>
 
+// =======================
+// PARAMÈTRES URL
+// =======================
+
 const params = new URLSearchParams(window.location.search);
+
+// =======================
+// INFOS FACTURE
+// =======================
 
 const entreprise = params.get("entreprise") || "";
 
-document.getElementById("entreprise").innerText = entreprise;
-document.getElementById("agence").innerText = params.get("agence") || "";
-document.getElementById("facture").innerText = params.get("facture") || "";
-document.getElementById("date").innerText = params.get("date") || "";
-document.getElementById("client").innerText = params.get("client") || "";
+document.getElementById("entreprise").innerText =
+entreprise;
 
-document.getElementById("total").innerText = params.get("montant_total") || "0";
-document.getElementById("paye").innerText = params.get("montant_paye") || "0";
-document.getElementById("reste").innerText = params.get("reste") || "0";
-document.getElementById("statut").innerText = params.get("statut") || "";
+document.getElementById("agence").innerText =
+params.get("agence") || "";
+
+document.getElementById("facture").innerText =
+params.get("facture") || "";
+
+document.getElementById("date").innerText =
+params.get("date") || "";
+
+document.getElementById("client").innerText =
+params.get("client") || "";
+
+document.getElementById("total").innerText =
+params.get("montant_total") || "0";
+
+document.getElementById("paye").innerText =
+params.get("montant_paye") || "0";
+
+document.getElementById("reste").innerText =
+params.get("reste") || "0";
+
+document.getElementById("statut").innerText =
+params.get("statut") || "";
+
+// =======================
+// FOOTER
+// =======================
 
 document.getElementById("footerEntreprise").innerText =
 "Merci pour votre confiance - " + entreprise;
@@ -93,18 +132,25 @@ document.getElementById("footerEntreprise").innerText =
 
 let produits = params.get("produits") || "";
 
+// décodage URL
 produits = decodeURIComponent(produits);
 
-const container = document.getElementById("produits");
+// conteneur
+const container =
+document.getElementById("produits");
 
+// si vide → rien
 if(produits.trim() !== ""){
 
+  // séparation lignes
   const lignes = produits.split("###");
 
   lignes.forEach(ligne => {
 
+    // séparation colonnes
     const data = ligne.split("|||");
 
+    // sécurité
     if(data.length >= 4){
 
       const div = document.createElement("div");
