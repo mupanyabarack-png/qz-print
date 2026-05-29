@@ -6,6 +6,10 @@
 
 <style>
 
+/* =======================
+FORMAT TICKET 58mm
+======================= */
+
 body{
   font-family: Arial;
   width: 58mm;
@@ -35,10 +39,17 @@ button{
   margin-top:10px;
 }
 
-/* cache bouton à l'impression */
+/* cacher bouton impression */
 @media print {
   #printBtn{
     display:none !important;
+  }
+}
+
+/* éviter coupure QR */
+@media print {
+  img{
+    page-break-inside: avoid;
   }
 }
 
@@ -66,9 +77,9 @@ button{
 <p><b>RESTE :</b> <span id="reste"></span></p>
 <p><b>STATUT :</b> <span id="statut"></span></p>
 
-<!-- QR CODE IMAGE -->
+<!-- QR CODE -->
 <div style="text-align:center; margin-top:10px;">
-  <img id="qrImage" width="120">
+  <img id="qrImage" width="120" alt="QR Code">
 </div>
 
 <div class="footer">
@@ -82,12 +93,12 @@ Imprimer
 <script>
 
 // =======================
-// PARAMÈTRES URL
+// URL PARAMS
 // =======================
 const params = new URLSearchParams(window.location.search);
 
 // =======================
-// INFOS
+// INFOS FACTURE
 // =======================
 const entreprise = params.get("entreprise") || "";
 const agence = params.get("agence") || "";
@@ -99,7 +110,7 @@ const paye = params.get("montant_paye") || "0";
 const reste = params.get("reste") || "0";
 const statut = params.get("statut") || "";
 
-// affichage
+// affichage infos
 document.getElementById("entreprise").innerText = entreprise;
 document.getElementById("agence").innerText = agence;
 document.getElementById("facture").innerText = facture;
@@ -133,22 +144,28 @@ if(produits.trim() !== ""){
 
     if(data.length >= 4){
 
+      const nom = data[0];
+      const qte = data[1];
+      const pu = data[2];
+      const totalL = data[3];
+
+      // affichage ticket
       const div = document.createElement("div");
       div.className = "produit";
 
-      div.innerHTML = `
-        <b>${data[0]}</b><br>
-        Qté: ${data[1]}<br>
-        PU: ${data[2]}<br>
-        Total: ${data[3]}
-      `;
+      div.innerHTML =
+        "<b>" + nom + "</b><br>" +
+        "Qté: " + qte + "<br>" +
+        "PU: " + pu + "<br>" +
+        "Total: " + totalL;
 
       container.appendChild(div);
 
+      // QR data
       produitsQR +=
-        data[0] + " | Qté:" + data[1] +
-        " | PU:" + data[2] +
-        " | Total:" + data[3] + "\n";
+        nom + " | Qté:" + qte +
+        " | PU:" + pu +
+        " | Total:" + totalL + "\n";
     }
 
   });
@@ -156,19 +173,23 @@ if(produits.trim() !== ""){
 }
 
 // =======================
-// QR CODE (IMAGE FIABLE)
+// QR CODE FIABLE
 // =======================
-const qrText =
-"Client: " + client + "\n" +
+
+let qrText =
+"FACTURE: " + facture + "\n" +
+"CLIENT: " + client + "\n\n" +
 produitsQR +
-"Total: " + total + "\n" +
-"Statut: " + statut;
+"\nTOTAL: " + total + "\n" +
+"STATUT: " + statut;
 
-const qrUrl =
-"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
-+ encodeURIComponent(qrText);
+const qrImg = document.getElementById("qrImage");
 
-document.getElementById("qrImage").src = qrUrl;
+setTimeout(() => {
+  qrImg.src =
+  "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
+  + encodeURIComponent(qrText);
+}, 300);
 
 </script>
 
