@@ -1,91 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Facture</title>
+<meta charset="UTF-8">
+<title>Facture</title>
 
-  <style>
-    body{
-      font-family: Arial;
-      font-size: 14px;
-      width: 300px;
-      margin: auto;
-    }
+<style>
+body{
+  font-family: Arial;
+  font-size: 14px;
+  width: 320px;
+  margin: auto;
+}
 
-    h2, h3{
-      text-align:center;
-      margin: 5px;
-    }
+h2,h3{
+  text-align:center;
+  margin:5px;
+}
 
-    .info{
-      margin-bottom:10px;
-    }
+.info{
+  margin-bottom:10px;
+}
 
-    table{
-      width:100%;
-      border-collapse: collapse;
-      margin-top:10px;
-    }
+table{
+  width:100%;
+  border-collapse: collapse;
+  margin-top:10px;
+}
 
-    th, td{
-      border:1px solid black;
-      padding:5px;
-      text-align:center;
-    }
+th,td{
+  border:1px solid black;
+  padding:5px;
+  text-align:center;
+}
 
-    .total{
-      margin-top:10px;
-      font-weight:bold;
-    }
+.total{
+  margin-top:10px;
+  font-weight:bold;
+}
 
-    button{
-      width:100%;
-      padding:10px;
-      margin-top:10px;
-    }
-  </style>
+button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+</style>
+
 </head>
 
 <body>
 
-  <h2 id="entreprise"></h2>
-  <h3 id="agence"></h3>
+<h2 id="entreprise"></h2>
+<h3 id="agence"></h3>
 
-  <div class="info">
-    <p><b>FACTURE :</b> <span id="facture"></span></p>
-    <p><b>DATE :</b> <span id="date"></span></p>
-    <p><b>CLIENT :</b> <span id="client"></span></p>
-  </div>
+<div class="info">
+<p><b>FACTURE :</b> <span id="facture"></span></p>
+<p><b>DATE :</b> <span id="date"></span></p>
+<p><b>CLIENT :</b> <span id="client"></span></p>
+</div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Produit</th>
-        <th>Qté</th>
-        <th>PU</th>
-        <th>Total</th>
-      </tr>
-    </thead>
+<table>
+<thead>
+<tr>
+<th>Produit</th>
+<th>Qté</th>
+<th>PU</th>
+<th>Total</th>
+</tr>
+</thead>
 
-    <tbody id="produits"></tbody>
-  </table>
+<tbody id="produits"></tbody>
+</table>
 
-  <div class="total">
-    <p>TOTAL : <span id="total"></span></p>
-    <p>PAYÉ : <span id="paye"></span></p>
-    <p>RESTE : <span id="reste"></span></p>
-    <p>STATUT : <span id="statut"></span></p>
-  </div>
+<div class="total">
+<p>TOTAL : <span id="total"></span></p>
+<p>PAYÉ : <span id="paye"></span></p>
+<p>RESTE : <span id="reste"></span></p>
+<p>STATUT : <span id="statut"></span></p>
+</div>
 
-  <p style="text-align:center;">Merci pour votre confiance</p>
+<p style="text-align:center;">Merci pour votre confiance</p>
 
-  <button onclick="window.print()">Imprimer</button>
+<button onclick="window.print()">Imprimer</button>
 
 <script>
 
+// ======================
+// INFOS FACTURE
+// ======================
 const params = new URLSearchParams(window.location.search);
 
-// Infos générales
 document.getElementById("entreprise").innerText = params.get("entreprise") || "";
 document.getElementById("agence").innerText = params.get("agence") || "";
 document.getElementById("facture").innerText = params.get("facture") || "";
@@ -97,27 +100,35 @@ document.getElementById("paye").innerText = params.get("montant_paye") || "0";
 document.getElementById("reste").innerText = params.get("reste") || "0";
 document.getElementById("statut").innerText = params.get("statut") || "";
 
-// PRODUITS
-const produits = params.get("produits") || "";
+// ======================
+// PRODUITS (FIX FINAL)
+// ======================
+const produits = (params.get("produits") || "").trim();
+
 const tbody = document.getElementById("produits");
 
-if(produits !== ""){
+// IMPORTANT : vider tableau
+tbody.innerHTML = "";
 
-  const lignes = produits.split(";");
+if (produits.length > 0) {
+
+  const lignes = produits.split(";").filter(l => l.trim() !== "");
 
   lignes.forEach(ligne => {
 
-    const data = ligne.split(",");
+    const clean = ligne.trim().replace(/\s+/g, " ");
 
-    if(data.length >= 4){
+    const data = clean.split(",");
+
+    if (data.length === 4) {
 
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-        <td>${data[0]}</td>
-        <td>${data[1]}</td>
-        <td>${data[2]}</td>
-        <td>${data[3]}</td>
+        <td>${data[0].trim()}</td>
+        <td>${data[1].trim()}</td>
+        <td>${data[2].trim()}</td>
+        <td>${data[3].trim()}</td>
       `;
 
       tbody.appendChild(tr);
