@@ -6,10 +6,10 @@
 
 <style>
 body{
-  font-family: Arial;
-  font-size: 14px;
-  width: 320px;
-  margin: auto;
+  font-family:Arial;
+  width:320px;
+  margin:auto;
+  font-size:14px;
 }
 
 h2,h3{
@@ -17,30 +17,14 @@ h2,h3{
   margin:5px;
 }
 
-.info{
-  margin-bottom:10px;
-}
-
-table{
-  width:100%;
-  border-collapse: collapse;
-  margin-top:10px;
-}
-
-th,td{
-  border:1px solid black;
-  padding:5px;
-  text-align:center;
-}
-
-.total{
-  margin-top:10px;
-  font-weight:bold;
+.produit{
+  border-bottom:1px dashed black;
+  padding:5px 0;
 }
 
 .footer{
-  margin-top:15px;
   text-align:center;
+  margin-top:15px;
   font-weight:bold;
 }
 
@@ -50,7 +34,6 @@ button{
   margin-top:10px;
 }
 </style>
-
 </head>
 
 <body>
@@ -58,31 +41,16 @@ button{
 <h2 id="entreprise"></h2>
 <h3 id="agence"></h3>
 
-<div class="info">
 <p><b>FACTURE :</b> <span id="facture"></span></p>
 <p><b>DATE :</b> <span id="date"></span></p>
 <p><b>CLIENT :</b> <span id="client"></span></p>
-</div>
 
-<table>
-<thead>
-<tr>
-<th>Produit</th>
-<th>Qté</th>
-<th>PU</th>
-<th>Total</th>
-</tr>
-</thead>
+<div id="produits"></div>
 
-<tbody id="produits"></tbody>
-</table>
-
-<div class="total">
-<p>TOTAL : <span id="total"></span></p>
-<p>PAYÉ : <span id="paye"></span></p>
-<p>RESTE : <span id="reste"></span></p>
-<p>STATUT : <span id="statut"></span></p>
-</div>
+<p><b>TOTAL :</b> <span id="total"></span></p>
+<p><b>PAYÉ :</b> <span id="paye"></span></p>
+<p><b>RESTE :</b> <span id="reste"></span></p>
+<p><b>STATUT :</b> <span id="statut"></span></p>
 
 <div class="footer">
 <p id="footerEntreprise"></p>
@@ -92,14 +60,8 @@ button{
 
 <script>
 
-// ======================
-// PARAMÈTRES URL
-// ======================
 const params = new URLSearchParams(window.location.search);
 
-// ======================
-// INFOS FACTURE
-// ======================
 const entreprise = params.get("entreprise") || "";
 
 document.getElementById("entreprise").innerText = entreprise;
@@ -113,56 +75,46 @@ document.getElementById("paye").innerText = params.get("montant_paye") || "0";
 document.getElementById("reste").innerText = params.get("reste") || "0";
 document.getElementById("statut").innerText = params.get("statut") || "";
 
-// ======================
-// PRODUITS (ULTRA ROBUSTE FINAL)
-// ======================
+document.getElementById("footerEntreprise").innerText =
+"Merci pour votre confiance - " + entreprise;
+
+// =======================
+// PRODUITS VERSION STABLE
+// =======================
+
 let produits = params.get("produits") || "";
 
-const tbody = document.getElementById("produits");
-tbody.innerHTML = "";
+produits = decodeURIComponent(produits);
 
-if (produits.trim() !== "") {
+const container = document.getElementById("produits");
 
-  // décodage complet URL
-  produits = decodeURIComponent(produits);
+if(produits.trim() !== ""){
 
-  // suppression retours ligne invisibles
-  produits = produits.replace(/\r?\n|\r/g, "");
+  const lignes = produits.split("###");
 
-  // séparation lignes produits
-  const lignes = produits.split(";").filter(l => l.trim() !== "");
+  lignes.forEach(ligne => {
 
-  for (let i = 0; i < lignes.length; i++) {
+    const data = ligne.split("|||");
 
-    let ligne = lignes[i].trim();
+    if(data.length >= 4){
 
-    if (!ligne) continue;
+      const div = document.createElement("div");
 
-    // nettoyage espaces multiples
-    ligne = ligne.replace(/\s+/g, " ");
+      div.className = "produit";
 
-    const data = ligne.split(",");
+      div.innerHTML = `
+        <b>${data[0]}</b><br>
+        Qté: ${data[1]}<br>
+        PU: ${data[2]}<br>
+        Total: ${data[3]}
+      `;
 
-    if (data.length < 4) continue;
+      container.appendChild(div);
+    }
 
-    const tr = document.createElement("tr");
+  });
 
-    tr.innerHTML = `
-      <td>${data[0]?.trim() || ""}</td>
-      <td>${data[1]?.trim() || ""}</td>
-      <td>${data[2]?.trim() || ""}</td>
-      <td>${data[3]?.trim() || ""}</td>
-    `;
-
-    tbody.appendChild(tr);
-  }
 }
-
-// ======================
-// FOOTER ENTREPRISE
-// ======================
-document.getElementById("footerEntreprise").innerText =
-  "Merci pour votre confiance - " + entreprise;
 
 </script>
 
