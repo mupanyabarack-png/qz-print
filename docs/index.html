@@ -1,17 +1,10 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Facture</title>
 
-<!-- QR CODE -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 <style>
-
-/* =======================
-FORMAT TICKET
-======================= */
 
 body{
   font-family: Arial;
@@ -20,25 +13,14 @@ body{
   font-size: 12px;
 }
 
-/*
-Pour 80mm remplace simplement :
-width:58mm;
-par
-width:80mm;
-*/
-
 h2,h3{
   text-align:center;
   margin:3px;
 }
 
-.info{
-  margin-bottom:5px;
-}
-
 .produit{
   border-bottom:1px dashed black;
-  padding:5px 0;
+  padding:4px 0;
 }
 
 .footer{
@@ -47,25 +29,17 @@ h2,h3{
   font-weight:bold;
 }
 
-#qrcode{
-  display:flex;
-  justify-content:center;
-  margin-top:10px;
-}
-
 button{
   width:100%;
   padding:10px;
   margin-top:10px;
 }
 
-/* Cache bouton impression */
+/* cache bouton à l'impression */
 @media print {
-
   #printBtn{
     display:none !important;
   }
-
 }
 
 </style>
@@ -76,24 +50,26 @@ button{
 <h2 id="entreprise"></h2>
 <h3 id="agence"></h3>
 
-<div class="info">
 <p><b>FACTURE :</b> <span id="facture"></span></p>
 <p><b>DATE :</b> <span id="date"></span></p>
 <p><b>CLIENT :</b> <span id="client"></span></p>
-</div>
+
+<hr>
 
 <!-- PRODUITS -->
 <div id="produits"></div>
 
-<br>
+<hr>
 
 <p><b>TOTAL :</b> <span id="total"></span></p>
 <p><b>PAYÉ :</b> <span id="paye"></span></p>
 <p><b>RESTE :</b> <span id="reste"></span></p>
 <p><b>STATUT :</b> <span id="statut"></span></p>
 
-<!-- QR CODE -->
-<div id="qrcode"></div>
+<!-- QR CODE IMAGE -->
+<div style="text-align:center; margin-top:10px;">
+  <img id="qrImage" width="120">
+</div>
 
 <div class="footer">
 <p id="footerEntreprise"></p>
@@ -108,41 +84,32 @@ Imprimer
 // =======================
 // PARAMÈTRES URL
 // =======================
-
 const params = new URLSearchParams(window.location.search);
 
 // =======================
-// INFOS FACTURE
+// INFOS
 // =======================
-
 const entreprise = params.get("entreprise") || "";
 const agence = params.get("agence") || "";
 const facture = params.get("facture") || "";
 const date = params.get("date") || "";
 const client = params.get("client") || "";
-const montant_total = params.get("montant_total") || "0";
-const montant_paye = params.get("montant_paye") || "0";
+const total = params.get("montant_total") || "0";
+const paye = params.get("montant_paye") || "0";
 const reste = params.get("reste") || "0";
 const statut = params.get("statut") || "";
 
-// =======================
-// AFFICHAGE
-// =======================
-
+// affichage
 document.getElementById("entreprise").innerText = entreprise;
 document.getElementById("agence").innerText = agence;
 document.getElementById("facture").innerText = facture;
 document.getElementById("date").innerText = date;
 document.getElementById("client").innerText = client;
 
-document.getElementById("total").innerText = montant_total;
-document.getElementById("paye").innerText = montant_paye;
+document.getElementById("total").innerText = total;
+document.getElementById("paye").innerText = paye;
 document.getElementById("reste").innerText = reste;
 document.getElementById("statut").innerText = statut;
-
-// =======================
-// FOOTER
-// =======================
 
 document.getElementById("footerEntreprise").innerText =
 "Merci pour votre confiance - " + entreprise;
@@ -150,14 +117,11 @@ document.getElementById("footerEntreprise").innerText =
 // =======================
 // PRODUITS
 // =======================
-
 let produits = params.get("produits") || "";
-
 produits = decodeURIComponent(produits);
 
-const container = document.getElementById("produits");
-
 let produitsQR = "";
+const container = document.getElementById("produits");
 
 if(produits.trim() !== ""){
 
@@ -169,31 +133,22 @@ if(produits.trim() !== ""){
 
     if(data.length >= 4){
 
-      const nomProduit = data[0];
-      const quantite = data[1];
-      const prix = data[2];
-      const totalProduit = data[3];
-
       const div = document.createElement("div");
-
       div.className = "produit";
 
       div.innerHTML = `
-        <b>${nomProduit}</b><br>
-        Qté: ${quantite}<br>
-        PU: ${prix}<br>
-        Total: ${totalProduit}
+        <b>${data[0]}</b><br>
+        Qté: ${data[1]}<br>
+        PU: ${data[2]}<br>
+        Total: ${data[3]}
       `;
 
       container.appendChild(div);
 
-      // texte QR
       produitsQR +=
-      "Produit: " + nomProduit +
-      " | Qté: " + quantite +
-      " | PU: " + prix +
-      " | Total: " + totalProduit + "\n";
-
+        data[0] + " | Qté:" + data[1] +
+        " | PU:" + data[2] +
+        " | Total:" + data[3] + "\n";
     }
 
   });
@@ -201,24 +156,19 @@ if(produits.trim() !== ""){
 }
 
 // =======================
-// TEXTE QR CODE
+// QR CODE (IMAGE FIABLE)
 // =======================
-
 const qrText =
 "Client: " + client + "\n" +
 produitsQR +
-"Montant Total: " + montant_total + "\n" +
+"Total: " + total + "\n" +
 "Statut: " + statut;
 
-// =======================
-// GÉNÉRATION QR CODE
-// =======================
+const qrUrl =
+"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
++ encodeURIComponent(qrText);
 
-new QRCode(document.getElementById("qrcode"), {
-    text: qrText,
-    width: 120,
-    height: 120
-});
+document.getElementById("qrImage").src = qrUrl;
 
 </script>
 
