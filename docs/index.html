@@ -93,10 +93,13 @@ button{
 <script>
 
 // ======================
-// INFOS FACTURE
+// PARAMÈTRES URL
 // ======================
 const params = new URLSearchParams(window.location.search);
 
+// ======================
+// INFOS FACTURE
+// ======================
 const entreprise = params.get("entreprise") || "";
 
 document.getElementById("entreprise").innerText = entreprise;
@@ -111,40 +114,45 @@ document.getElementById("reste").innerText = params.get("reste") || "0";
 document.getElementById("statut").innerText = params.get("statut") || "";
 
 // ======================
-// PRODUITS (ROBUSTE)
+// PRODUITS (VERSION 100% ROBUSTE)
 // ======================
-let produits = params.get("produits");
+let produits = params.get("produits") || "";
 
 const tbody = document.getElementById("produits");
 tbody.innerHTML = "";
 
-if (produits) {
+if (produits.length > 0) {
 
+  // décodage URL
   produits = decodeURIComponent(produits);
 
+  // nettoyage global (retours ligne)
+  produits = produits.replace(/\r?\n|\r/g, "");
+
+  // séparation lignes
   const lignes = produits.split(";");
 
-  lignes.forEach(ligne => {
+  for (let i = 0; i < lignes.length; i++) {
 
-    if (!ligne || ligne.trim() === "") return;
+    let ligne = lignes[i];
 
-    const data = ligne.trim().split(",");
+    if (!ligne || ligne.trim() === "") continue;
 
-    if (data.length < 4) return;
+    const data = ligne.split(",");
+
+    if (data.length !== 4) continue;
 
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${data[0]?.trim() || ""}</td>
-      <td>${data[1]?.trim() || ""}</td>
-      <td>${data[2]?.trim() || ""}</td>
-      <td>${data[3]?.trim() || ""}</td>
+      <td>${data[0].trim()}</td>
+      <td>${data[1].trim()}</td>
+      <td>${data[2].trim()}</td>
+      <td>${data[3].trim()}</td>
     `;
 
     tbody.appendChild(tr);
-
-  });
-
+  }
 }
 
 // ======================
