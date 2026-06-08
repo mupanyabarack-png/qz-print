@@ -1,14 +1,10 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Facture</title>
 
 <style>
-
-/* =======================
-FORMAT TICKET 58mm
-======================= */
 
 body{
   font-family: Arial;
@@ -22,9 +18,16 @@ h2,h3{
   margin:3px;
 }
 
+hr{
+  border: none;
+  border-top: 1px dashed black;
+  margin: 5px 0;
+}
+
 .produit{
   border-bottom:1px dashed black;
-  padding:4px 0;
+  padding:6px 0;
+  line-height: 1.4;
 }
 
 .footer{
@@ -33,23 +36,19 @@ h2,h3{
   font-weight:bold;
 }
 
+p{
+  margin:2px 0;
+}
+
 button{
   width:100%;
   padding:10px;
   margin-top:10px;
 }
 
-/* cacher bouton impression */
 @media print {
   #printBtn{
     display:none !important;
-  }
-}
-
-/* éviter coupure QR */
-@media print {
-  img{
-    page-break-inside: avoid;
   }
 }
 
@@ -60,8 +59,7 @@ button{
 
 <!-- ENTREPRISE -->
 <h2 id="entreprise"></h2>
-<p id="rccm" style="text-align:center;"></p>
-
+<p style="text-align:center;" id="rccm"></p>
 <h3 id="agence"></h3>
 
 <hr>
@@ -79,145 +77,95 @@ button{
 
 <hr>
 
-<!-- FINANCES -->
-<p><b>Sous-total :</b> <span id="sous_total"></span></p>
-<p><b>Remise :</b> <span id="remise"></span></p>
-<p><b>TVA :</b> <span id="tva"></span></p>
+<!-- FINANCES PRO -->
+<p><b>HT (Sous-total) :</b> <span id="ht"></span></p>
+<p><b>Remise (%) :</b> <span id="remise"></span></p>
+<p><b>TVA (%) :</b> <span id="tva"></span></p>
 
-<p><b>TOTAL :</b> <span id="total"></span></p>
+<p><b>TOTAL TTC :</b> <span id="ttc"></span></p>
 <p><b>PAYÉ :</b> <span id="paye"></span></p>
 <p><b>RESTE :</b> <span id="reste"></span></p>
 
 <hr>
 
 <!-- QR CODE -->
-<div style="text-align:center; margin-top:10px;">
-  <img id="qrImage" width="120" alt="QR Code">
+<div style="text-align:center;">
+  <img id="qr" width="120">
 </div>
 
 <!-- FOOTER -->
 <div class="footer">
-<p id="footerEntreprise"></p>
+Merci pour votre confiance - <span id="footerEnt"></span>
 </div>
 
-<!-- PRINT -->
-<button id="printBtn" onclick="window.print()">
-Imprimer
-</button>
+<button id="printBtn" onclick="window.print()">Imprimer</button>
 
 <script>
 
-// =======================
-// URL PARAMS
-// =======================
 const params = new URLSearchParams(window.location.search);
 
-// =======================
-// ENTREPRISE
-// =======================
-document.getElementById("entreprise").innerText =
+// ================= ENTREPRISE =================
+document.getElementById("entreprise").innerText = params.get("entreprise") || "";
+document.getElementById("rccm").innerText = "RCCM: " + (params.get("rccm") || "");
+document.getElementById("agence").innerText = params.get("agence") || "";
+
+// ================= FACTURE =================
+document.getElementById("facture").innerText = params.get("facture") || "";
+document.getElementById("date").innerText = params.get("date") || "";
+document.getElementById("client").innerText = params.get("client") || "";
+document.getElementById("statut").innerText = params.get("statut") || "";
+
+// ================= FINANCES =================
+document.getElementById("ht").innerText = params.get("ht") || "0";
+document.getElementById("remise").innerText = params.get("remise") || "0";
+document.getElementById("tva").innerText = params.get("tva") || "0";
+document.getElementById("ttc").innerText = params.get("ttc") || "0";
+document.getElementById("paye").innerText = params.get("paye") || "0";
+document.getElementById("reste").innerText = params.get("reste") || "0";
+
+document.getElementById("footerEnt").innerText =
 params.get("entreprise") || "";
 
-document.getElementById("rccm").innerText =
-"RCCM: " + (params.get("rccm") || "");
-
-document.getElementById("agence").innerText =
-params.get("agence") || "";
-
-document.getElementById("facture").innerText =
-params.get("facture") || "";
-
-document.getElementById("date").innerText =
-params.get("date") || "";
-
-document.getElementById("client").innerText =
-params.get("client") || "";
-
-document.getElementById("statut").innerText =
-params.get("statut") || "";
-
-// =======================
-// FINANCES
-// =======================
-document.getElementById("sous_total").innerText =
-params.get("sous_total") || "0";
-
-document.getElementById("remise").innerText =
-params.get("remise") || "0";
-
-document.getElementById("tva").innerText =
-params.get("tva") || "0";
-
-document.getElementById("total").innerText =
-params.get("montant_total") || "0";
-
-document.getElementById("paye").innerText =
-params.get("montant_paye") || "0";
-
-document.getElementById("reste").innerText =
-params.get("reste") || "0";
-
-// Footer
-document.getElementById("footerEntreprise").innerText =
-"Merci pour votre confiance - " +
-(params.get("entreprise") || "");
-
-// =======================
-// PRODUITS (ROBUSTE)
-// =======================
-let produits = decodeURIComponent(params.get("produits") || "");
-
+// ================= PRODUITS =================
+const produits = decodeURIComponent(params.get("produits") || "");
 const container = document.getElementById("produits");
 
 if(produits.trim() !== ""){
 
   const lignes = produits.split("###").filter(x => x.trim() !== "");
 
-  lignes.forEach(ligne => {
+  lignes.forEach(l => {
 
-    const data = ligne.split("|||").map(e => (e || "").trim());
+    const d = l.split("|||").map(x => (x || "").trim());
 
-    if(data.length >= 4){
-
-      const nom = data[0];
-      const qte = data[1];
-      const pu = data[2];
-      const totalL = data[3];
+    if(d.length >= 4){
 
       const div = document.createElement("div");
       div.className = "produit";
 
       div.innerHTML =
-        "<b>" + nom + "</b><br>" +
-        "Qté: " + qte + "<br>" +
-        "PU: " + pu + "<br>" +
-        "Total: " + totalL;
+        "<b>" + d[0] + "</b><br>" +
+        "Qté: " + d[1] + "<br>" +
+        "PU: " + d[2] + "<br>" +
+        "Total: " + d[3];
 
       container.appendChild(div);
-
     }
 
   });
 
 }
 
-// =======================
-// QR CODE
-// =======================
-
+// ================= QR CODE =================
 let qrText =
 "FACTURE: " + (params.get("facture") || "") + "\n" +
 "CLIENT: " + (params.get("client") || "") + "\n" +
-"TOTAL: " + (params.get("montant_total") || "0") + "\n" +
+"TOTAL TTC: " + (params.get("ttc") || "") + "\n" +
 "STATUT: " + (params.get("statut") || "");
 
-const qrImg = document.getElementById("qrImage");
-
-setTimeout(() => {
-  qrImg.src =
-  "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
-  + encodeURIComponent(qrText);
-}, 300);
+document.getElementById("qr").src =
+"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
++ encodeURIComponent(qrText);
 
 </script>
 
