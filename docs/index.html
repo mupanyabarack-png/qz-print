@@ -58,12 +58,19 @@ button{
 
 <body>
 
+<!-- ENTREPRISE -->
 <h2 id="entreprise"></h2>
+<p id="rccm" style="text-align:center;"></p>
+
 <h3 id="agence"></h3>
 
+<hr>
+
+<!-- FACTURE -->
 <p><b>FACTURE :</b> <span id="facture"></span></p>
 <p><b>DATE :</b> <span id="date"></span></p>
 <p><b>CLIENT :</b> <span id="client"></span></p>
+<p><b>STATUT :</b> <span id="statut"></span></p>
 
 <hr>
 
@@ -72,20 +79,28 @@ button{
 
 <hr>
 
+<!-- FINANCES -->
+<p><b>Sous-total :</b> <span id="sous_total"></span></p>
+<p><b>Remise :</b> <span id="remise"></span></p>
+<p><b>TVA :</b> <span id="tva"></span></p>
+
 <p><b>TOTAL :</b> <span id="total"></span></p>
 <p><b>PAYÉ :</b> <span id="paye"></span></p>
 <p><b>RESTE :</b> <span id="reste"></span></p>
-<p><b>STATUT :</b> <span id="statut"></span></p>
+
+<hr>
 
 <!-- QR CODE -->
 <div style="text-align:center; margin-top:10px;">
   <img id="qrImage" width="120" alt="QR Code">
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
 <p id="footerEntreprise"></p>
 </div>
 
+<!-- PRINT -->
 <button id="printBtn" onclick="window.print()">
 Imprimer
 </button>
@@ -98,49 +113,69 @@ Imprimer
 const params = new URLSearchParams(window.location.search);
 
 // =======================
-// INFOS FACTURE
+// ENTREPRISE
 // =======================
-const entreprise = params.get("entreprise") || "";
-const agence = params.get("agence") || "";
-const facture = params.get("facture") || "";
-const date = params.get("date") || "";
-const client = params.get("client") || "";
-const total = params.get("montant_total") || "0";
-const paye = params.get("montant_paye") || "0";
-const reste = params.get("reste") || "0";
-const statut = params.get("statut") || "";
+document.getElementById("entreprise").innerText =
+params.get("entreprise") || "";
 
-// affichage infos
-document.getElementById("entreprise").innerText = entreprise;
-document.getElementById("agence").innerText = agence;
-document.getElementById("facture").innerText = facture;
-document.getElementById("date").innerText = date;
-document.getElementById("client").innerText = client;
+document.getElementById("rccm").innerText =
+"RCCM: " + (params.get("rccm") || "");
 
-document.getElementById("total").innerText = total;
-document.getElementById("paye").innerText = paye;
-document.getElementById("reste").innerText = reste;
-document.getElementById("statut").innerText = statut;
+document.getElementById("agence").innerText =
+params.get("agence") || "";
 
+document.getElementById("facture").innerText =
+params.get("facture") || "";
+
+document.getElementById("date").innerText =
+params.get("date") || "";
+
+document.getElementById("client").innerText =
+params.get("client") || "";
+
+document.getElementById("statut").innerText =
+params.get("statut") || "";
+
+// =======================
+// FINANCES
+// =======================
+document.getElementById("sous_total").innerText =
+params.get("sous_total") || "0";
+
+document.getElementById("remise").innerText =
+params.get("remise") || "0";
+
+document.getElementById("tva").innerText =
+params.get("tva") || "0";
+
+document.getElementById("total").innerText =
+params.get("montant_total") || "0";
+
+document.getElementById("paye").innerText =
+params.get("montant_paye") || "0";
+
+document.getElementById("reste").innerText =
+params.get("reste") || "0";
+
+// Footer
 document.getElementById("footerEntreprise").innerText =
-"Merci pour votre confiance - " + entreprise;
+"Merci pour votre confiance - " +
+(params.get("entreprise") || "");
 
 // =======================
-// PRODUITS
+// PRODUITS (ROBUSTE)
 // =======================
-let produits = params.get("produits") || "";
-produits = decodeURIComponent(produits);
+let produits = decodeURIComponent(params.get("produits") || "");
 
-let produitsQR = "";
 const container = document.getElementById("produits");
 
 if(produits.trim() !== ""){
 
-  const lignes = produits.split("###");
+  const lignes = produits.split("###").filter(x => x.trim() !== "");
 
   lignes.forEach(ligne => {
 
-    const data = ligne.split("|||");
+    const data = ligne.split("|||").map(e => (e || "").trim());
 
     if(data.length >= 4){
 
@@ -149,7 +184,6 @@ if(produits.trim() !== ""){
       const pu = data[2];
       const totalL = data[3];
 
-      // affichage ticket
       const div = document.createElement("div");
       div.className = "produit";
 
@@ -161,11 +195,6 @@ if(produits.trim() !== ""){
 
       container.appendChild(div);
 
-      // QR data
-      produitsQR +=
-        nom + " | Qté:" + qte +
-        " | PU:" + pu +
-        " | Total:" + totalL + "\n";
     }
 
   });
@@ -173,15 +202,14 @@ if(produits.trim() !== ""){
 }
 
 // =======================
-// QR CODE FIABLE
+// QR CODE
 // =======================
 
 let qrText =
-"FACTURE: " + facture + "\n" +
-"CLIENT: " + client + "\n\n" +
-produitsQR +
-"\nTOTAL: " + total + "\n" +
-"STATUT: " + statut;
+"FACTURE: " + (params.get("facture") || "") + "\n" +
+"CLIENT: " + (params.get("client") || "") + "\n" +
+"TOTAL: " + (params.get("montant_total") || "0") + "\n" +
+"STATUT: " + (params.get("statut") || "");
 
 const qrImg = document.getElementById("qrImage");
 
